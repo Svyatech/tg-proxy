@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  mtproto-proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mtproto-proxy
+    restart: always
+    # для пользователей MacOs
+    platform: linux/amd64
+    ports:
+      - "${PROXY_PORT:-443}:443"
+    environment:
+      - SECRET=${SECRET:-}
+      - SECRET_COUNT=${SECRET_COUNT:-5}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "1"
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "443"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
